@@ -19,6 +19,8 @@ typedef SwagSong =
 	var needsVoices:Bool;
 	var speed:Float;
 
+	var mania:Null<Int>;
+
 	var player1:String;
 	var player2:String;
 	var gfVersion:String;
@@ -50,6 +52,7 @@ class Song
 	public var gameOverEnd:String;
 	public var disableNoteRGB:Bool = false;
 	public var speed:Float = 1;
+	public var mania:Int= 3;
 	public var stage:String;
 	public var player1:String = 'bf';
 	public var player2:String = 'dad';

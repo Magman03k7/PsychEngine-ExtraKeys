@@ -15,13 +15,56 @@ class ControlsSubState extends MusicBeatSubstate
 	var curSelected:Int = 0;
 	var curAlt:Bool = false;
 
-	//Show on gamepad - Display name - Save file key - Rebind display name
+	//Show on gamepad - Display name - Save file key - Rebind display name - Key Counts
+	var curNoteKeys:Int = 4;
 	var options:Array<Dynamic> = [
 		[true, 'NOTES'],
-		[true, 'Left', 'note_left', 'Note Left'],
-		[true, 'Down', 'note_down', 'Note Down'],
-		[true, 'Up', 'note_up', 'Note Up'],
-		[true, 'Right', 'note_right', 'Note Right'],
+		[true, '4 KEY'],
+		[true, 'Note', 'note_1', '1 Key Note', 1],
+		[true, 'Left', 'note_2a', '2 Key Note Left', 2],
+		[true, 'Right', 'note_2b', '2 Key Note Right', 2],
+		[true, 'Left', 'note_3a', '3 Key Note Left', 3],
+		[true, 'Center', 'note_3b', '3 Key Note Center', 3],
+		[true, 'Right', 'note_3c', '3 Key Note Right', 3],
+		[true, 'Left', 'note_left', '4 Key Note Left', 4],
+		[true, 'Down', 'note_down', '4 Key Note Down', 4],
+		[true, 'Up', 'note_up', '4 Key Note Up', 4],
+		[true, 'Right', 'note_right', '4 Key Note Right', 4],
+		[true, 'Left', 'note_5a', '5 Key Note Left', 5],
+		[true, 'Down', 'note_5b', '5 Key Note Down', 5],
+		[true, 'Center', 'note_5c', '5 Key Note Center', 5],
+		[true, 'Up', 'note_5d', '5 Key Note Up', 5],
+		[true, 'Right', 'note_5e', '5 Key Note Right', 5],
+		[true, 'Left 1', 'note_6a', '6 Key Note Left 1', 6],
+		[true, 'Up', 'note_6b', '6 Key Note Up', 6],
+		[true, 'Right 1', 'note_6c', '6 Key Note Right 1', 6],
+		[true, 'Left 2', 'note_6d', '6 Key Note Left 2', 6],
+		[true, 'Down', 'note_6e', '6 Key Note Down', 6],
+		[true, 'Right 1', 'note_6f', '6 Key Note Right 2', 6],
+		[true, 'Left 1', 'note_7a', '7 Key Note Left 1', 7],
+		[true, 'Up', 'note_7b', '7 Key Note Up', 7],
+		[true, 'Right 1', 'note_7c', '7 Key Note Right 1', 7],
+		[true, 'Center', 'note_7d', '7 Key Note Center', 7],
+		[true, 'Left 2', 'note_7e', '7 Key Note Left 2', 7],
+		[true, 'Down', 'note_7f', '7 Key Note Down', 7],
+		[true, 'Right 2', 'note_7g', '7 Key Note Right 2', 7],
+		[true, 'Left 1', 'note_8a', '8 Key Note Left 1', 8],
+		[true, 'Down 1', 'note_8b', '8 Key Note Down 1', 8],
+		[true, 'Up 1', 'note_8c', '8 Key Note Up 1', 8],
+		[true, 'Right 1', 'note_8d', '8 Key Note Right 1', 8],
+		[true, 'Left 2', 'note_8e', '8 Key Note Left 2', 8],
+		[true, 'Down 2', 'note_8f', '8 Key Note Down 2', 8],
+		[true, 'Up 2', 'note_8g', '8 Key Note Up 2', 8],
+		[true, 'Right 2', 'note_8h', '8 Key Note Right 2', 8],
+		[true, 'Left 1', 'note_9a', '9 Key Note Left 1', 9],
+		[true, 'Down 1', 'note_9b', '9 Key Note Down 1', 9],
+		[true, 'Up 1', 'note_9c', '9 Key Note Up 1', 9],
+		[true, 'Right 1', 'note_9d', '9 Key Note Right 1', 9],
+		[true, 'Center', 'note_9e', '9 Key Note Center', 9],
+		[true, 'Left 2', 'note_9f', '9 Key Note Left 2', 9],
+		[true, 'Down 2', 'note_9g', '9 Key Note Down 2', 9],
+		[true, 'Up 2', 'note_9h', '9 Key Note Up 2', 9],
+		[true, 'Right 2', 'note_9i', '9 Key Note Right 2', 9],
 		[true],
 		[true, 'UI'],
 		[true, 'Left', 'ui_left', 'UI Left'],
@@ -105,6 +148,11 @@ class ControlsSubState extends MusicBeatSubstate
 		text.setScale(0.4);
 		add(text);
 
+		var text2:Alphabet = new Alphabet(50, 600, 'SHIFT + < or > to\nChange Key Number', true);
+		text2.alignment = LEFT;
+		text2.setScale(0.4);
+		add(text2);
+
 		createTexts();
 	}
 
@@ -126,7 +174,7 @@ class ControlsSubState extends MusicBeatSubstate
 		for (i in 0...options.length)
 		{
 			var option:Array<Dynamic> = options[i];
-			if(option[0] || onKeyboardMode)
+			if((option[0] || onKeyboardMode) && (option.length > 4 && option[4] == curNoteKeys || option.length <= 4))
 			{
 				if(option.length > 1)
 				{
@@ -139,6 +187,8 @@ class ControlsSubState extends MusicBeatSubstate
 					text.changeX = false;
 					text.distancePerItem.y = 60;
 					text.targetY = myID;
+					if(text.text.endsWith('KEY'))
+						text.text = curNoteKeys + ' KEY';
 					if(isDisplayKey)
 						grpDisplay.add(text);
 					else {
@@ -276,10 +326,15 @@ class ControlsSubState extends MusicBeatSubstate
 				close();
 				return;
 			}
-			if(FlxG.keys.justPressed.CONTROL || FlxG.gamepads.anyJustPressed(LEFT_SHOULDER) || FlxG.gamepads.anyJustPressed(RIGHT_SHOULDER)) swapMode();
+			if(FlxG.keys.justPressed.CONTROL || FlxG.gamepads.anyJustPressed(LEFT_SHOULDER)) swapMode();
 
-			if(FlxG.keys.justPressed.LEFT || FlxG.keys.justPressed.RIGHT || FlxG.gamepads.anyJustPressed(DPAD_LEFT) || FlxG.gamepads.anyJustPressed(DPAD_RIGHT) ||
-				FlxG.gamepads.anyJustPressed(LEFT_STICK_DIGITAL_LEFT) || FlxG.gamepads.anyJustPressed(LEFT_STICK_DIGITAL_RIGHT)) updateAlt(true);
+			if(FlxG.keys.pressed.SHIFT || FlxG.gamepads.anyPressed(RIGHT_SHOULDER))
+			{
+				if(FlxG.keys.justPressed.LEFT || FlxG.gamepads.anyJustPressed(DPAD_LEFT) || FlxG.gamepads.anyJustPressed(LEFT_STICK_DIGITAL_LEFT)) keyChange(-1);
+				if(FlxG.keys.justPressed.RIGHT || FlxG.gamepads.anyJustPressed(DPAD_RIGHT) || FlxG.gamepads.anyJustPressed(LEFT_STICK_DIGITAL_RIGHT)) keyChange(1);
+			}
+			else if(FlxG.keys.justPressed.LEFT || FlxG.keys.justPressed.RIGHT || FlxG.gamepads.anyJustPressed(DPAD_LEFT) || FlxG.gamepads.anyJustPressed(DPAD_RIGHT) ||
+					FlxG.gamepads.anyJustPressed(LEFT_STICK_DIGITAL_LEFT) || FlxG.gamepads.anyJustPressed(LEFT_STICK_DIGITAL_RIGHT)) updateAlt(true);
 
 			if(FlxG.keys.justPressed.UP || FlxG.gamepads.anyJustPressed(DPAD_UP) || FlxG.gamepads.anyJustPressed(LEFT_STICK_DIGITAL_UP)) updateText(-1);
 			else if(FlxG.keys.justPressed.DOWN || FlxG.gamepads.anyJustPressed(DPAD_DOWN) || FlxG.gamepads.anyJustPressed(LEFT_STICK_DIGITAL_DOWN)) updateText(1);
@@ -502,6 +557,18 @@ class ControlsSubState extends MusicBeatSubstate
 		curSelected = 0;
 		curAlt = false;
 		controllerSpr.animation.play(onKeyboardMode ? 'keyboard' : 'gamepad');
+		createTexts();
+	}
+
+	function keyChange(?move:Int = 0)
+	{
+		curNoteKeys += move;
+
+		if(curNoteKeys > 9) curNoteKeys = 1;
+		if(curNoteKeys < 1) curNoteKeys = 9;
+
+		curSelected = 0;
+		curAlt = false;
 		createTexts();
 	}
 

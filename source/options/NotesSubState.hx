@@ -68,7 +68,7 @@ class NotesSubState extends MusicBeatSubstate
 		modeBG.alpha = 0.4;
 		add(modeBG);
 
-		notesBG = new FlxSprite(140, 190).makeGraphic(480, 125, FlxColor.BLACK);
+		notesBG = new FlxSprite(10, 190).makeGraphic(700, 100, FlxColor.BLACK);
 		notesBG.visible = false;
 		notesBG.alpha = 0.4;
 		add(notesBG);
@@ -469,8 +469,8 @@ class NotesSubState extends MusicBeatSubstate
 				for (i in 0...3)
 				{
 					var strumRGB:RGBShaderReference = myNotes.members[curSelectedNote].rgbShader;
-					var color:FlxColor = !onPixel ? ClientPrefs.defaultData.arrowRGB[curSelectedNote][i] :
-													ClientPrefs.defaultData.arrowRGBPixel[curSelectedNote][i];
+					var color:FlxColor = !onPixel ? ClientPrefs.defaultData.arrowRGBExtra[curSelectedNote][i] :
+													ClientPrefs.defaultData.arrowRGBPixelExtra[curSelectedNote][i];
 					switch(i)
 					{
 						case 0:
@@ -483,7 +483,7 @@ class NotesSubState extends MusicBeatSubstate
 					dataArray[curSelectedNote][i] = color;
 				}
 			}
-			setShaderColor(!onPixel ? ClientPrefs.defaultData.arrowRGB[curSelectedNote][curSelectedMode] : ClientPrefs.defaultData.arrowRGBPixel[curSelectedNote][curSelectedMode]);
+			setShaderColor(!onPixel ? ClientPrefs.defaultData.arrowRGBExtra[curSelectedNote][curSelectedMode] : ClientPrefs.defaultData.arrowRGBPixelExtra[curSelectedNote][curSelectedMode]);
 			FlxG.sound.play(Paths.sound('cancelMenu'), 0.6);
 			updateColors();
 		}
@@ -572,7 +572,7 @@ class NotesSubState extends MusicBeatSubstate
 	var bigNote:Note;
 	public function spawnNotes()
 	{
-		dataArray = !onPixel ? ClientPrefs.data.arrowRGB : ClientPrefs.data.arrowRGBPixel;
+		dataArray = !onPixel ? ClientPrefs.data.arrowRGBExtra : ClientPrefs.data.arrowRGBPixelExtra;
 		if (onPixel) PlayState.stageUI = "pixel";
 
 		// clear groups
@@ -627,9 +627,9 @@ class NotesSubState extends MusicBeatSubstate
 		for (i in 0...dataArray.length)
 		{
 			Note.initializeGlobalRGBShader(i);
-			var newNote:StrumNote = new StrumNote(150 + (480 / dataArray.length * i), 200, i, 0);
+			var newNote:StrumNote = new StrumNote(20 + (680 / dataArray.length * i), 200, i, 0);
 			newNote.useRGBShader = true;
-			newNote.setGraphicSize(102);
+			newNote.setGraphicSize(80);
 			newNote.updateHitbox();
 			newNote.ID = i;
 			myNotes.add(newNote);
@@ -643,8 +643,12 @@ class NotesSubState extends MusicBeatSubstate
 		bigNote.shader = Note.globalRgbShaders[curSelectedNote].shader;
 		for (i in 0...Note.colArray.length)
 		{
-			if(!onPixel) bigNote.animation.addByPrefix('note$i', Note.colArray[i] + '0', 24, true);
-			else bigNote.animation.add('note$i', [i + 4], 24, true);
+			if(!onPixel)
+			{
+				bigNote.animation.addByPrefix('note$i', Note.colArrayAlt[i] + '0', 24, true);
+				bigNote.animation.addByPrefix('note$i', Note.colArray[i] + '0', 24, true);
+			}
+			else bigNote.animation.add('note$i', [i + 9], 24, true);
 		}
 		insert(members.indexOf(myNotes) + 1, bigNote);
 		_storedColor = getShaderColor();

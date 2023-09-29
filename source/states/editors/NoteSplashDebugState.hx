@@ -40,22 +40,8 @@ class NoteSplashDebugState extends MusicBeatState
 		splashes = new FlxTypedGroup<FlxSprite>();
 		add(splashes);
 
-		for (i in 0...maxNotes)
-		{
-			var x = i * 220 + 240;
-			var y = 290;
-			var note:StrumNote = new StrumNote(x, y, i, 0);
-			note.alpha = 0.75;
-			note.playAnim('static');
-			notes.add(note);
-
-			var splash:FlxSprite = new FlxSprite(x, y);
-			splash.setPosition(splash.x - Note.swagWidth * 0.95, splash.y - Note.swagWidth);
-			splash.shader = note.rgbShader.parent.shader;
-			splash.antialiasing = ClientPrefs.data.antialiasing;
-			splashes.add(splash);
-		}
-
+		Main.mania = 3;
+		addStrumAndSplash();
 
 		//
 		var txtx = 60;
@@ -111,7 +97,8 @@ class NoteSplashDebugState extends MusicBeatState
 			"Press SPACE to Reset animation\n
 			Press ENTER twice to save to the loaded Note Splash PNG's folder\n
 			A/D change selected note - Arrow Keys to change offset (Hold shift for 10x)\n
-			Ctrl + C/V - Copy & Paste", 16);
+			Ctrl + C/V - Copy & Paste\n
+			Z/X - Change Mania", 16);
 		text.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		text.scrollFactor.set();
 		add(text);
@@ -246,6 +233,12 @@ class NoteSplashDebugState extends MusicBeatState
 				spr.animation.curAnim.curFrame = forceFrame;
 			});
 		}
+
+		// Change Mania
+		if (FlxG.keys.justPressed.X) changeMania(1);
+		else if (FlxG.keys.justPressed.Z) changeMania(-1);
+
+		FlxG.watch.addQuick('splashSize', splashes.members[0].width);
 	}
 
 	function updateOffsetText()
@@ -388,19 +381,22 @@ class NoteSplashDebugState extends MusicBeatState
 
 	function changeSelection(change:Int = 0)
 	{
-		var max:Int = Note.colArray.length;
+		var max:Int = Main.mania+1;
 		curSelected += change;
 		if(curSelected < 0) curSelected = max - 1;
 		else if(curSelected >= max) curSelected = 0;
 
-		selection.x = curSelected * 220 + 220;
+		selection.x = setPosX(curSelected) - 20 * Note.scalesPixel[Main.mania];
+		selection.y = setPosY() - 20 * Note.scalesPixel[Main.mania];
+		selection.setGraphicSize(Std.int(150 * Note.scalesPixel[Main.mania]));
+		selection.updateHitbox();
 		updateOffsetText();
 	}
 
 	function selectedArray(sel:Int = -1)
 	{
 		if(sel < 0) sel = curSelected;
-		var animID:Int = sel + ((curAnim - 1) * Note.colArray.length);
+		var animID:Int = sel + ((curAnim - 1) * Main.mania+1);
 		if(config.offsets[animID] == null)
 		{
 			while(config.offsets[animID] == null)
@@ -413,6 +409,57 @@ class NoteSplashDebugState extends MusicBeatState
 	{
 		spr.animation.addByPrefix(name, anim, framerate, loop);
 		return spr.animation.getByName(name) != null;
+	}
+
+	function addStrumAndSplash() {
+		maxNotes = Main.mania+1;
+		for (i in 0...maxNotes)
+		{
+			var x = setPosX(i);
+			var y = setPosY();
+			var note:StrumNote = new StrumNote(x, y, i, 0);
+			note.alpha = 0.75;
+			note.playAnim('static');
+			notes.add(note);
+
+			var splash:FlxSprite = new FlxSprite(x, y);
+			var spX:Float = x + Note.swidths[Main.mania] / 2 - Note.swagWidth / 2;
+			var spY:Float = y + Note.swidths[Main.mania] / 2 - Note.swagWidth / 2;
+			splash.setPosition(spX - Note.swagWidth * 0.95, spY - Note.swagWidth);
+			splash.setGraphicSize(Std.int(splash.width * Note.scalesPixel[Main.mania]));
+			splash.shader = note.rgbShader.parent.shader;
+			splash.antialiasing = ClientPrefs.data.antialiasing;
+			splashes.add(splash);
+		}
+	}
+
+	function changeMania(change:Int = 0)
+	{
+		Main.mania += change;
+		if(Main.mania < 0) Main.mania = 8;
+		else if(Main.mania > 8) Main.mania = 0;
+
+		notes.forEachAlive(function(spr:StrumNote) spr.destroy());
+		notes.clear();
+		splashes.forEachAlive(function(spr:FlxSprite) spr.destroy());
+		splashes.clear();
+
+		addStrumAndSplash();
+
+		curSelected = 0;
+		loadFrames();
+		changeSelection();
+	}
+
+	function setPosX(data:Int = 0):Float
+	{
+		var space:Float = 240 * Note.scalesPixel[Main.mania];
+		return FlxG.width / 2 - space * Main.mania / 2 + space * data - Note.swidths[Main.mania] / 2;
+	}
+
+	function setPosY():Float
+	{
+		return 350 - Note.swidths[Main.mania] / 2;
 	}
 
 	override function destroy()

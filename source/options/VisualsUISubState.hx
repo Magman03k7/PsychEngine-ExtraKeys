@@ -19,7 +19,8 @@ class VisualsUISubState extends BaseOptionsMenu
 		notes = new FlxTypedGroup<StrumNote>();
 		for (i in 0...Note.colArray.length)
 		{
-			var note:StrumNote = new StrumNote(370 + (560 / Note.colArray.length) * i, -200, i, 0);
+			var note:StrumNote = new StrumNote(45 + 140 * i, -200, i, 0);
+			note.setGraphicSize(112);
 			note.centerOffsets();
 			note.centerOrigin();
 			note.playAnim('static');
@@ -188,6 +189,7 @@ class VisualsUISubState extends BaseOptionsMenu
 	{
 		notes.forEachAlive(function(note:StrumNote) {
 			changeNoteSkin(note);
+			note.setGraphicSize(112);
 			note.centerOffsets();
 			note.centerOrigin();
 		});

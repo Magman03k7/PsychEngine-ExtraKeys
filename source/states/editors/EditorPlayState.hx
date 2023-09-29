@@ -39,11 +39,70 @@ class EditorPlayState extends MusicBeatSubstate
 	var lastRating:FlxSprite;
 	var lastCombo:FlxSprite;
 	var lastScore:Array<FlxSprite> = [];
-	var keysArray:Array<String> = [
+	var keysArray:Array<Dynamic> = [
+		[
+		'note_1'
+		],
+		[
+		'note_2a',
+		'note_2b'
+		],
+		[
+		'note_3a',
+		'note_3b',
+		'note_3c'
+		],
+		[
 		'note_left',
 		'note_down',
 		'note_up',
 		'note_right'
+		],
+		[
+		'note_5a',
+		'note_5b',
+		'note_5c',
+		'note_5d',
+		'note_5e'
+		],
+		[
+		'note_6a',
+		'note_6b',
+		'note_6c',
+		'note_6d',
+		'note_6e',
+		'note_6f'
+		],
+		[
+		'note_7a',
+		'note_7b',
+		'note_7c',
+		'note_7d',
+		'note_7e',
+		'note_7f',
+		'note_7g'
+		],
+		[
+		'note_8a',
+		'note_8b',
+		'note_8c',
+		'note_8d',
+		'note_8e',
+		'note_8f',
+		'note_8g',
+		'note_8h'
+		],
+		[
+		'note_9a',
+		'note_9b',
+		'note_9c',
+		'note_9d',
+		'note_9e',
+		'note_9f',
+		'note_9g',
+		'note_9h',
+		'note_9i'
+		]
 	];
 	
 	var songHits:Int = 0;
@@ -326,10 +385,10 @@ class EditorPlayState extends MusicBeatSubstate
 				var daStrumTime:Float = songNotes[0];
 				if(daStrumTime < startPos) continue;
 
-				var daNoteData:Int = Std.int(songNotes[1] % 4);
+				var daNoteData:Int = Std.int(songNotes[1] % (Main.mania+1));
 				var gottaHitNote:Bool = section.mustHitSection;
 
-				if (songNotes[1] > 3)
+				if (songNotes[1] > Main.mania)
 				{
 					gottaHitNote = !section.mustHitSection;
 				}
@@ -343,7 +402,7 @@ class EditorPlayState extends MusicBeatSubstate
 				var swagNote:Note = new Note(daStrumTime, daNoteData, oldNote, this);
 				swagNote.mustPress = gottaHitNote;
 				swagNote.sustainLength = songNotes[2];
-				swagNote.gfNote = (section.gfSection && (songNotes[1]<4));
+				swagNote.gfNote = (section.gfSection && (songNotes[1]<(Main.mania+1)));
 				swagNote.noteType = songNotes[3];
 				if(!Std.isOfType(songNotes[3], String)) swagNote.noteType = ChartingState.noteTypeList[songNotes[3]]; //Backward compatibility + compatibility with Week 7 charts
 
@@ -362,7 +421,7 @@ class EditorPlayState extends MusicBeatSubstate
 
 						var sustainNote:Note = new Note(daStrumTime + (Conductor.stepCrochet * susNote), daNoteData, oldNote, true, this);
 						sustainNote.mustPress = gottaHitNote;
-						sustainNote.gfNote = (section.gfSection && (songNotes[1]<4));
+						sustainNote.gfNote = (section.gfSection && (songNotes[1]<(Main.mania+1)));
 						sustainNote.noteType = swagNote.noteType;
 						sustainNote.scrollFactor.set();
 						swagNote.tail.push(sustainNote);
@@ -416,7 +475,7 @@ class EditorPlayState extends MusicBeatSubstate
 	{
 		var strumLineX:Float = ClientPrefs.data.middleScroll ? PlayState.STRUM_X_MIDDLESCROLL : PlayState.STRUM_X;
 		var strumLineY:Float = ClientPrefs.data.downScroll ? (FlxG.height - 150) : 50;
-		for (i in 0...4)
+		for (i in 0...(Main.mania+1))
 		{
 			// FlxG.log.add(i);
 			var targetAlpha:Float = 1;
@@ -642,7 +701,7 @@ class EditorPlayState extends MusicBeatSubstate
 	private function onKeyPress(event:KeyboardEvent):Void
 	{
 		var eventKey:FlxKey = event.keyCode;
-		var key:Int = PlayState.getKeyFromEvent(keysArray, eventKey);
+		var key:Int = PlayState.getKeyFromEvent(keysArray[Main.mania], eventKey);
 		//trace('Pressed: ' + eventKey);
 
 		if (!controls.controllerMode && FlxG.keys.checkStatus(eventKey, JUST_PRESSED)) keyPressed(key);
@@ -707,7 +766,7 @@ class EditorPlayState extends MusicBeatSubstate
 	private function onKeyRelease(event:KeyboardEvent):Void
 	{
 		var eventKey:FlxKey = event.keyCode;
-		var key:Int = PlayState.getKeyFromEvent(keysArray, eventKey);
+		var key:Int = PlayState.getKeyFromEvent(keysArray[Main.mania], eventKey);
 		//trace('Pressed: ' + eventKey);
 
 		if(!controls.controllerMode && key > -1) keyReleased(key);
@@ -730,7 +789,8 @@ class EditorPlayState extends MusicBeatSubstate
 		var holdArray:Array<Bool> = [];
 		var pressArray:Array<Bool> = [];
 		var releaseArray:Array<Bool> = [];
-		for (key in keysArray)
+		var keysStringArray:Array<String> = keysArray[Main.mania];
+		for (key in keysStringArray)
 		{
 			holdArray.push(controls.pressed(key));
 			pressArray.push(controls.justPressed(key));
@@ -843,8 +903,11 @@ class EditorPlayState extends MusicBeatSubstate
 	function spawnNoteSplashOnNote(note:Note) {
 		if(note != null) {
 			var strum:StrumNote = playerStrums.members[note.noteData];
-			if(strum != null)
-				spawnNoteSplash(strum.x, strum.y, note.noteData, note);
+			if(strum != null) {
+				var x:Float = strum.x + Note.swidths[Main.mania] / 2 - Note.swagWidth / 2;
+				var y:Float = strum.y + Note.swidths[Main.mania] / 2 - Note.swagWidth / 2;
+				spawnNoteSplash(x, y, note.noteData, note);
+			}
 		}
 	}
 

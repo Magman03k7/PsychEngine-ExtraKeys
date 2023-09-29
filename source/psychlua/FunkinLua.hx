@@ -91,6 +91,7 @@ class FunkinLua {
 		set('curBpm', Conductor.bpm);
 		set('bpm', PlayState.SONG.bpm);
 		set('scrollSpeed', PlayState.SONG.speed);
+		set('mania', Main.mania);
 		set('crochet', Conductor.crochet);
 		set('stepCrochet', Conductor.stepCrochet);
 		set('songLength', FlxG.sound.music.length);
@@ -147,7 +148,7 @@ class FunkinLua {
 		set('botPlay', game.cpuControlled);
 		set('practice', game.practiceMode);
 
-		for (i in 0...4) {
+		for (i in 0...Main.mania+1) {
 			set('defaultPlayerStrumX' + i, 0);
 			set('defaultPlayerStrumY' + i, 0);
 			set('defaultOpponentStrumX' + i, 0);
@@ -1412,23 +1413,6 @@ class FunkinLua {
 					theSound.pause();
 					theSound.time = value;
 					if(wasResumed) theSound.play();
-				}
-			}
-		});
-		Lua_helper.add_callback(lua, "getSoundPitch", function(tag:String) {
-			if(tag != null && tag.length > 0 && game.modchartSounds.exists(tag)) {
-				return game.modchartSounds.get(tag).pitch;
-			}
-			return 0;
-		});
-		Lua_helper.add_callback(lua, "setSoundPitch", function(tag:String, value:Float, doPause:Bool = false) {
-			if(tag != null && tag.length > 0 && game.modchartSounds.exists(tag)) {
-				var theSound:FlxSound = game.modchartSounds.get(tag);
-				if(theSound != null) {
-					var wasResumed:Bool = theSound.playing;
-					if (doPause) theSound.pause();
-					theSound.pitch = value;
-					if (doPause && wasResumed) theSound.play();
 				}
 			}
 		});
