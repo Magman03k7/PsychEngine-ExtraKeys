@@ -15,7 +15,7 @@ class ControlsSubState extends MusicBeatSubstate
 	var curSelected:Int = 0;
 	var curAlt:Bool = false;
 
-	//Show on gamepad - Display name - Save file key - Rebind display name - Key Counts
+	//Show on gamepad - Display name - Save file key - Rebind display name
 	var curNoteKeys:Int = 4;
 	var options:Array<Dynamic> = [
 		[true, 'NOTES'],
@@ -107,6 +107,10 @@ class ControlsSubState extends MusicBeatSubstate
 	{
 		super();
 
+		#if DISCORD_ALLOWED
+		DiscordClient.changePresence("Controls Menu", null);
+		#end
+
 		options.push([true]);
 		options.push([true]);
 		options.push([true, defaultKey]);
@@ -175,7 +179,7 @@ class ControlsSubState extends MusicBeatSubstate
 		{
 			var option:Array<Dynamic> = options[i];
 			if((option[0] || onKeyboardMode) && (option.length > 4 && option[4] == curNoteKeys || option.length <= 4))
-			{
+				{
 				if(option.length > 1)
 				{
 					var isCentered:Bool = (option.length < 3);
@@ -334,7 +338,7 @@ class ControlsSubState extends MusicBeatSubstate
 				if(FlxG.keys.justPressed.RIGHT || FlxG.gamepads.anyJustPressed(DPAD_RIGHT) || FlxG.gamepads.anyJustPressed(LEFT_STICK_DIGITAL_RIGHT)) keyChange(1);
 			}
 			else if(FlxG.keys.justPressed.LEFT || FlxG.keys.justPressed.RIGHT || FlxG.gamepads.anyJustPressed(DPAD_LEFT) || FlxG.gamepads.anyJustPressed(DPAD_RIGHT) ||
-					FlxG.gamepads.anyJustPressed(LEFT_STICK_DIGITAL_LEFT) || FlxG.gamepads.anyJustPressed(LEFT_STICK_DIGITAL_RIGHT)) updateAlt(true);
+				FlxG.gamepads.anyJustPressed(LEFT_STICK_DIGITAL_LEFT) || FlxG.gamepads.anyJustPressed(LEFT_STICK_DIGITAL_RIGHT)) updateAlt(true);
 
 			if(FlxG.keys.justPressed.UP || FlxG.gamepads.anyJustPressed(DPAD_UP) || FlxG.gamepads.anyJustPressed(LEFT_STICK_DIGITAL_UP)) updateText(-1);
 			else if(FlxG.keys.justPressed.DOWN || FlxG.gamepads.anyJustPressed(DPAD_DOWN) || FlxG.gamepads.anyJustPressed(LEFT_STICK_DIGITAL_DOWN)) updateText(1);
@@ -343,7 +347,9 @@ class ControlsSubState extends MusicBeatSubstate
 			{
 				if(options[curOptions[curSelected]][1] != defaultKey)
 				{
-					bindingBlack = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, /*FlxColor.BLACK*/ FlxColor.WHITE);
+					bindingBlack = new FlxSprite().makeGraphic(1, 1, /*FlxColor.BLACK*/ FlxColor.WHITE);
+					bindingBlack.scale.set(FlxG.width, FlxG.height);
+					bindingBlack.updateHitbox();
 					bindingBlack.alpha = 0;
 					FlxTween.tween(bindingBlack, {alpha: 0.6}, 0.35, {ease: FlxEase.linear});
 					add(bindingBlack);
@@ -561,18 +567,18 @@ class ControlsSubState extends MusicBeatSubstate
 	}
 
 	function keyChange(?move:Int = 0)
-	{
-		curNoteKeys += move;
-
-		if(curNoteKeys > 9) curNoteKeys = 1;
-		if(curNoteKeys < 1) curNoteKeys = 9;
-
-		curSelected = 0;
-		curAlt = false;
-		createTexts();
-	}
-
-	function updateAlt(?doSwap:Bool = false)
+		{
+			curNoteKeys += move;
+	
+			if(curNoteKeys > 9) curNoteKeys = 1;
+			if(curNoteKeys < 1) curNoteKeys = 9;
+	
+			curSelected = 0;
+			curAlt = false;
+			createTexts();
+		}
+	
+		function updateAlt(?doSwap:Bool = false)
 	{
 		if(doSwap)
 		{

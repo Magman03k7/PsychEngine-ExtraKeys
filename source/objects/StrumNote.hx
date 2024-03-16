@@ -1,5 +1,7 @@
 package objects;
 
+import backend.animation.PsychAnimationController;
+
 import shaders.RGBPalette;
 import shaders.RGBPalette.RGBShaderReference;
 
@@ -24,6 +26,8 @@ class StrumNote extends FlxSprite
 
 	public var useRGBShader:Bool = true;
 	public function new(x:Float, y:Float, leData:Int, player:Int) {
+		animation = new PsychAnimationController(this);
+
 		rgbShader = new RGBShaderReference(this, Note.initializeGlobalRGBShader(leData));
 		rgbShader.enabled = false;
 		if(PlayState.SONG != null && PlayState.SONG.disableNoteRGB) useRGBShader = false;
@@ -130,7 +134,6 @@ class StrumNote extends FlxSprite
 	}
 
 	override function update(elapsed:Float) {
-		FlxG.watch.addQuick('rbg'+noteData, rgbShader.enabled);
 		if(resetAnim > 0) {
 			resetAnim -= elapsed;
 			if(resetAnim <= 0) {
