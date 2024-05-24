@@ -93,6 +93,7 @@ class Note extends FlxSprite
 	public static var splashOffsetScale:Array<Float> = [1, 1, 1, 1, 1.08, 1.17, 1.27, 1.4, 1.52];
 	public static var swidths:Array<Float> = [112, 112, 112, 112, 98, 84, 77, 70, 63];
 	public static var posRest:Array<Int> = [-168, -112, -56, 0, 15, 35, 45, 55, 60];
+	public static var midArray:Array<Int> = [0, 0, 1, 1, 2, 2, 3, 3, 4];
 	public static var gfxIndex:Array<Dynamic> = [
 		[4],
 		[0, 3],

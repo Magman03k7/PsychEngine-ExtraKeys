@@ -1448,7 +1448,7 @@ class PlayState extends MusicBeatState
 						else if(ClientPrefs.data.middleScroll)
 						{
 							sustainNote.x += 310;
-							if(daNoteData > 1) //Up and Right
+							if(daNoteData > Note.midArray[Main.mania]) //Up and Right
 								sustainNote.x += FlxG.width / 2 + 25;
 						}
 					}
@@ -1461,7 +1461,7 @@ class PlayState extends MusicBeatState
 				else if(ClientPrefs.data.middleScroll)
 				{
 					swagNote.x += 310;
-					if(daNoteData > 1) //Up and Right
+					if(daNoteData > Note.midArray[Main.mania]) //Up and Right
 					{
 						swagNote.x += FlxG.width / 2 + 25;
 					}
@@ -1578,7 +1578,7 @@ class PlayState extends MusicBeatState
 				if(ClientPrefs.data.middleScroll)
 				{
 					babyArrow.x += 310;
-					if(i > 1) { //Up and Right
+					if(i > Note.midArray[Main.mania]) { //Up and Right
 						babyArrow.x += FlxG.width / 2 + 25;
 					}
 				}
