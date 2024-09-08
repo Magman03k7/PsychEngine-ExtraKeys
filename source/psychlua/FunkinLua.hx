@@ -133,6 +133,7 @@ class FunkinLua {
 		set('ratingName', '');
 		set('ratingFC', '');
 		set('version', MainMenuState.psychEngineVersion.trim());
+		set('versionEK', MainMenuState.extraKeysVersion.trim());
 
 		set('inGameOver', false);
 		set('mustHitSection', false);
